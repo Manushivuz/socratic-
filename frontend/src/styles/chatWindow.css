@@ -1,0 +1,25 @@
+.dark-mode #chatWindowid1{
+	background-color: #4d4a4a;
+}
+
+.dark-mode #chatWindowid2{
+	background-color: #4d4a4a;
+}
+
+.dark-mode #sidebarcheck{
+	background-color: #485457;
+	color: white;
+}
+.dark-mode #sidebartext{
+	color: white;
+}
+
+.dark-mode #inputback{
+	background-color: black;
+	color: white;
+}
+
+.dark-mode #textareaback{
+	background-color: #485457;
+	color: white;
+}
