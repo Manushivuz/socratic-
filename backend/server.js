@@ -6,6 +6,7 @@ const app = express();
 const ConnectDB = require('./config/db');
 const AuthRouter = require('./routes/authRoutes');
 const ConvoRouter = require('./routes/convoRoutes');
+const MLRouter = require('./routes/mlRoutes');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -17,12 +18,9 @@ app.use(cookieParser());
 ConnectDB();
 
 
-
 app.use('/api/auth/',AuthRouter);
 app.use('/api/convo/',ConvoRouter);
-
-
-
+app.use('/api/ml/',MLRouter);
 
 app.get('/',(req,res)=>{
 	res.send("THis is index/landing");
