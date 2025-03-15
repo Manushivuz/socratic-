@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const app = express();
 const ConnectDB = require('./config/db');
+const AuthRouter = require('./routes/authRoutes');
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -14,6 +16,10 @@ app.use(cookieParser());
 	
 ConnectDB();
 console.log("Line 20"+process.env.MONGO_PWD);
+
+
+app.use('/api/auth/',AuthRouter);
+
 
 app.get('/',(req,res)=>{
 	res.send("THis is index/landing");

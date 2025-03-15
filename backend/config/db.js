@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const uri = `mongodb+srv://shivuve:${process.env.MONGO_PWD}@socratic.xt8eb.mongodb.net/?retryWrites=true&w=majority&appName=Socratic/SocraticDB`;
+const uri = `mongodb+srv://shivuve:${process.env.MONGO_PWD}@socratic.xt8eb.mongodb.net/SocraticDB?retryWrites=true&w=majority&appName=Socratic`;
 
 const client_options = {
-      serverApi: { version: '1', strict: true, deprecationErrors: true }
+      serverApi: { version: '1', strict: true, deprecationErrors: true },
     }
 	
 const ConnectDB = async ()=>{
