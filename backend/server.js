@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const ConnectDB = require('./config/db');
 const AuthRouter = require('./routes/authRoutes');
-
+const ConvoRouter = require('./routes/convoRoutes');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -15,10 +15,13 @@ app.use(cookieParser());
 	})
 	
 ConnectDB();
-console.log("Line 20"+process.env.MONGO_PWD);
+
 
 
 app.use('/api/auth/',AuthRouter);
+app.use('/api/convo/',ConvoRouter);
+
+
 
 
 app.get('/',(req,res)=>{

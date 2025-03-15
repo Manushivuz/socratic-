@@ -2,12 +2,9 @@ const mongoose = require('mongoose');
 
 const ConvoSchema = mongoose.Schema({
 	userId:{type: mongoose.Schema.Types.ObjectId, ref:'User'},
-	conversations: [{
-		conversationId: {type:String, default:""},
-		messages: [{
-			user: {type: String, default:""},
-			ai: {type: String, default:""}
-		}]
+	conversations:[{
+		conversationId: {type:String, default:"", unique:true},
+		messages: []
 	}]
 },{versionKey: false});
 
