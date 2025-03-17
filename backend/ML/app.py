@@ -38,13 +38,17 @@ chat_session = create_chat_session()
 current_conversation_id = None
 
 
-@app.route('/mlprompt', methods=['POST'])
+@app.route('/chatprompt', methods=['POST'])
 def mlprompt():
     global chat_session, current_conversation_id
     try:
         print("Here")
         data = request.get_json()
         user_message = data.get('message', '')
+        trigger = data.get('trigger','')
+        if trigger:
+            print("trigger true")
+            chat_session = create_chat_session()
         print(f"Prompt: {user_message}")
         # AI response generation
         response = chat_session.send_message(user_message)

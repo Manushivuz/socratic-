@@ -7,16 +7,18 @@ const ConnectDB = require('./config/db');
 const AuthRouter = require('./routes/authRoutes');
 const ConvoRouter = require('./routes/convoRoutes');
 const MLRouter = require('./routes/mlRoutes');
+const current_convo = null;
+
 
 app.use(express.json());
 app.use(cookieParser());
-	cors({
+app.use(cors({
 		credentials: true,
-		origin: ['http://localhost:3000']
-	})
+		origin: 'http://localhost:3000',
+		allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+	}));
 	
 ConnectDB();
-
 
 app.use('/api/auth/',AuthRouter);
 app.use('/api/convo/',ConvoRouter);

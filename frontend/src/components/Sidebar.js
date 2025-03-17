@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import '../styles/chatWindow.css'
+
 
 const Sidebar = ({ previousChats, onChatClick, onNewChat, onDeleteChat }) => {
   return (
@@ -14,19 +14,18 @@ const Sidebar = ({ previousChats, onChatClick, onNewChat, onDeleteChat }) => {
         <FontAwesomeIcon icon={faPlus} size="lg" />
       </button>
       <ul>
-        {console.log(previousChats)}
         {previousChats.length > 0 ? (
           previousChats.map((chat) => (
-            <li key={chat.conversationId} className="flex justify-between items-center">
+            <li key={chat.convoId} className="flex justify-between items-center">
               <button
                 className="w-full text-left py-2 px-4 border-b border-gray-300 dark:border-gray-700 truncate"
-                onClick={() => onChatClick(chat.conversationId)}
+                onClick={() => onChatClick(chat.convoId)}
               >
-                {chat.firstMessage || 'Empty Conversation'}
+                {chat.messages || 'Empty Conversation'}
               </button>
               <button
                 className="text-red-500 hover:opacity-55 p-2"
-                onClick={() => onDeleteChat(chat.conversationId)}
+                onClick={() => onDeleteChat(chat.convoId)}
               >
                 <FontAwesomeIcon icon={faTrashAlt} />
               </button>

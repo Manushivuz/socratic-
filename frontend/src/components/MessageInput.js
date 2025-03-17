@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { FaMicrophone } from 'react-icons/fa'; // Import voice icon
 import { FaRegSmile } from 'react-icons/fa'; // Dummy icon, can be replaced later
-import '../styles/chatWindow.css'
 
 
-function MessageInput({ isSidebarOpen, onSendMessage }) {
+function MessageInput({ isSidebarOpen, onSendMessage,chatbox,setchatbox }) {
   const [inputValue, setInputValue] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [listeningText, setListeningText] = useState('');
 
   const handleSendMessage = () => {
     if (inputValue.trim() !== '') {
-      console.log('Sending message:', inputValue); // Log the message being sent
       onSendMessage(inputValue);
       setInputValue(''); // Clear input after sending
     } else {
@@ -33,12 +31,10 @@ function MessageInput({ isSidebarOpen, onSendMessage }) {
     recognition.onstart = () => {
       setIsListening(true);
       setListeningText('Listening...');
-      console.log('Microphone clicked, starting speech recognition...');
     };
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      console.log('Recognized text:', transcript);
       setInputValue(transcript); // Set recognized text to input value
       setListeningText('Speech recognized.'); // Feedback for successful recognition
     };
@@ -59,16 +55,18 @@ function MessageInput({ isSidebarOpen, onSendMessage }) {
   };
 
   return (
-    <div className={`flex items-center p-4 shadow-lg rounded-md transition-all duration-500 w-full relative`} id="inputback">
+    <div className={`flex items-center p-4 message-input shadow-lg rounded-md transition-all duration-500 w-full relative` } id = 'inputback'>
+      {/* Dummy Icon (e.g., a smiley icon) to the left of the text area */}
       <FaRegSmile className="text-xl text-gray-600 dark:text-gray-400 mr-2" />
 
-      <textarea id="textareaback"
+      <textarea
         className={`flex-grow h-12 p-2 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring focus:border-blue-500 resize-none transition-all duration-500 ${isSidebarOpen ? 'w-[calc(100%-80px)]' : 'w-full'}`}
         placeholder="Type your message..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         style={{ borderRadius: '8px' }} // Curved border
+		id = "textareaback"
       />
 
       <button 

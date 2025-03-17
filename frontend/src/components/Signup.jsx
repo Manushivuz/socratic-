@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom';
 import '../styles/Signup.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const {REACT_APP_BACKEND_URL} = process.env;
 
 
 const Signup = ({ switchToLogin }) => {
@@ -20,7 +19,7 @@ const Signup = ({ switchToLogin }) => {
       alert("All fields are required");
       return;
     }
-    axios.post(REACT_APP_BACKEND_URL+'/register', 
+    axios.post('http://localhost:5000/api/auth/register', 
       { name, email, password }, 
       { headers: { 'Content-Type': 'application/json' } }
     )

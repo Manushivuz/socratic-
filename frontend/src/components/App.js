@@ -4,11 +4,8 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow'; // Import ChatWindow component
 import MessageInput from './MessageInput'; // Import MessageInput component
 import NewHeader from './NewHeader';
-import '../styles/home.css'
-import '../styles/chatWindow.css'
-
-const {REACT_APP_BACKEND_URL} = process.env;
-
+import '../styles/home.css';
+import '../styles/chatWindow.css';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -16,6 +13,9 @@ function App() {
   const [previousChats, setPreviousChats] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [loading, setLoading] = useState(false); // Loading state
+  const [addconvotrigger, setaddconvotrigger] = useState(false);
+  const backy = process.env.REACT_APP_BACKEND_URL;
+  const [chatbox,setchatbox] = useState(false);
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -28,9 +28,11 @@ function App() {
   
       // Make a POST request to the backend API
       setLoading(true); // Set loading to true while waiting for response
-      axios.post(REACT_APP_BACKEND_URL+'/api/chat', { message: newMessage },{ headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+      axios.post(backy+'/api/ml/getairesponse', 
+	  { prompt: newMessage, trigger: addconvotrigger},
+	  { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
         .then((response) => {
-          const aiResponse = { sender: 'ai', text: response.data.response };
+          const aiResponse = { sender: 'ai', text: response.data.message };
           setMessages((prevMessages) => [...prevMessages, aiResponse]);
   
           // You can update the chat list or handle any additional logic here
@@ -52,28 +54,62 @@ function App() {
     loadPreviousChats();
   };
 
-  const loadPreviousChats = () => {
+  const loadPreviousChats = async () => {
     setLoading(true); // Set loading to true while fetching chats
-    axios.get(REACT_APP_BACKEND_URL+'/api/conversations',{withCredentials:true})
-      .then(response => {
-        setPreviousChats(response.data);
-      })
-      .catch(error => console.error('Error loading chats:', error))
-      .finally(() => {
-        setLoading(false); // Reset loading state
-      });
+	try{
+		
+		axios.defaults.withCredentials = true;
+		axios(backy+'/api/convo/getconvolist', {
+		  method: 'POST',
+		  withCredentials: true
+		}).then(res => {
+			 if(res.data.message) setPreviousChats(res.data.message);
+		   }).catch(err => {
+			 console.log(err.response);
+		   })
+		/*axios.defaults.withCredentials = true;
+		const {data} = await axios.post(backy+'/api/convo/getconvolist',{withCredentials:true});
+		console.log("in loadprev chats: ",data);
+		if(data.message) setPreviousChats(data.message);*/
+	}
+	catch(e){
+		console.log(e);
+	}
+	setLoading(false); 
   };
 
   useEffect(() => {
     loadPreviousChats();
   }, []);
 
-  const displayFullChat = (chatId) => {
+  const displayFullChat = async (chatId) => {
+	setaddconvotrigger(false);
+	
+	setchatbox(true);
+	
     setCurrentConversationId(chatId); // Set the current conversation ID
-    axios.get(`REACT_APP_BACKEND_URL/api/conversation/${chatId}`, { withCredentials: true })
+	try{
+		axios.defaults.withCredentials = true;
+		const {data} = await axios.post(backy+'/api/convo/getconvofromid', {convoId:chatId},{withCredentials:true});
+		if(data.message){
+		const formattedMessages = data.message.map(entry => [
+          { sender: 'user', text: entry.user }, // Format for the user message
+          { sender: 'ai', text: entry.ai },     // Format for the AI response
+        ]).flat();
+
+        // Set the formatted messages in the state
+        setMessages(formattedMessages);
+		}
+	}
+	catch(e){
+		console.log(e);
+	}
+  /*  axios.get(backy+`/api/convo/getconvofromi`, {convoId:chatId},{ headers: { 'Content-Type': 'application/json' }},
+	{ withCredentials: true })
       .then(response => {
         // Extract the conversation messages
-        const formattedMessages = response.data.conversation.map(entry => [
+		console.log("Message : ",response.data);
+        const formattedMessages = response.data.message.map(entry => [
           { sender: 'user', text: entry.user }, // Format for the user message
           { sender: 'ai', text: entry.ai },     // Format for the AI response
         ]).flat();
@@ -83,33 +119,23 @@ function App() {
       })
       .catch(error => {
         console.error('Error loading chat:', error);
-      });
-};
+      }); */
+}
 
 
 const handleNewConversation = () => {
-  axios.post(REACT_APP_BACKEND_URL+'/api/start_new_conversation', {}, { withCredentials: true })
-    .then((response) => {
-      // Clear previous messages in the chat window
-      setMessages([]);
-
-      // Set the current conversation ID based on the response
-      setCurrentConversationId(response.data._id);
-
-      // Load previous chats, including the new conversation
-      loadPreviousChats();
-    })
-    .catch((error) => {
-      console.error('Error starting a new conversation:', error);
-    });
+	setMessages([]);
+	setaddconvotrigger(true);
+	setchatbox(true);
+	
 };
 
   // Function to handle chat deletion
   const handleDeleteChat = (chatId) => {
-    axios.delete(REACT_APP_BACKEND_URL+`/api/conversation/${chatId}`, { withCredentials: true })
+    axios.post(backy+`/api/convo/deleteconvofromid`,{convoId: chatId}, { withCredentials: true })
       .then(() => {
         // Update the sidebar by filtering out the deleted conversation
-        setPreviousChats((prevChats) => prevChats.filter(chat => chat.conversationId !== chatId));
+        setPreviousChats((prevChats) => prevChats.filter(chat => chat.convoId !== chatId));
       })
       .catch((error) => {
         console.error('Error deleting chat:', error);
@@ -121,10 +147,10 @@ const handleNewConversation = () => {
     <div className='home-body'>
       <div className="flex flex-col h-screen">
       <NewHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-      <div className="flex flex-grow relative overflow-hidden">
+      <div className="flex flex-grow relative overflow-hidden" id="chatWindowid1">
         <div
           className={`transition-transform duration-1000 ease-in-out h-full ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} z-10 absolute`}
-          style={{ width: '250px' }}
+          id = "sidebarcheck" style={{ width: '250px' }}
         >
           <Sidebar 
             previousChats={previousChats} 
@@ -142,7 +168,7 @@ const handleNewConversation = () => {
         >
           <div className="flex flex-col flex-grow h-full min-h-0" id="chatWindowid1">
             <ChatWindow messages={messages} loading={loading} /> {/* Pass loading state to ChatWindow */}
-            <MessageInput isSidebarOpen={isSidebarOpen} onSendMessage={handleSendMessage} />
+			{chatbox && <MessageInput isSidebarOpen={isSidebarOpen,chatbox,setchatbox} onSendMessage={handleSendMessage} />}
             
           </div>
         </div>

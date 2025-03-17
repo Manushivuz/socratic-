@@ -4,21 +4,18 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom'
 import "../styles/Signup.css"
 const Login = ({ switchToSignUp }) => {
-const [name, setName] = useState('');
-const [password, setPassword] = useState('');
-const navigator =  useNavigate();
-
-const {REACT_APP_BACKEND_URL} = process.env;
-
-
-
-  const handleSubmit = (e) => {
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const navigator =  useNavigate();
+  const backy = process.env.REACT_APP_BACKEND_URL;
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name ||!password) {
       alert("All fields are required");
       return;
     }
-    axios.post(REACT_APP_BACKEND_URL+'/login', 
+    axios.post(backy+'/api/auth/login', 
       { name, password }, 
       { headers: { 'Content-Type': 'application/json' },
       withCredentials: true }
@@ -28,7 +25,7 @@ const {REACT_APP_BACKEND_URL} = process.env;
        {navigator('/Home')}
     })
     .catch(err => {
-      alert(err)
+      alert(`Error: ${err}`)
     });
   }    
 

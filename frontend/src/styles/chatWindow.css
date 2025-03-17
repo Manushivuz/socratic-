@@ -17,7 +17,15 @@
 .dark-mode #inputback{
 	background-color: black;
 	color: white;
+	border: none;
+	
 }
+
+
+#inputback{
+	transition: display 2s ease-in;
+}
+
 
 .dark-mode #textareaback{
 	background-color: #485457;

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaChevronDown, FaCopy, FaVolumeUp } from 'react-icons/fa';
 import { AiFillCheckCircle } from 'react-icons/ai'; // Import the checkmark icon
-import '../styles/chatWindow.css'
+import '../styles/chatWindow.css';
 
 function ChatWindow({ messages }) {
   const chatWindowRef = useRef(null);
@@ -17,8 +17,8 @@ function ChatWindow({ messages }) {
   }, [messages]);
 
   useEffect(() => {
+    
     const newMessage = messages[messages.length - 1];
-    console.log(newMessage)
     if (newMessage && newMessage.sender === 'ai' && newMessage.text) {
       // Only proceed if newMessage.text is a valid string
       if (newMessage.text !== lastAiMessageRef.current) {
@@ -65,9 +65,9 @@ function ChatWindow({ messages }) {
     <div
       ref={chatWindowRef}
       className="flex-grow chat-window p-0 rounded-lg shadow-lg h-full overflow-y-auto"
-      id = "chatWindowid2"
+	  id = "chatWindowid1"
     >
-      <div className="flex flex-col space-y-4 p-4">
+      <div className="flex flex-col space-y-4 p-4" id = "chatWindowid2">
         {messages.map((message, index) => (
           <div key={index} className="relative">
             <div
@@ -77,11 +77,9 @@ function ChatWindow({ messages }) {
                   : 'bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-white self-start flex items-center max-w-[50%] w-fit'
               }`}
             >
-              {message.sender === 'user'&& message.text}
-	      {message.sender === 'ai'&& message.text}
-		
+              {message.sender === 'user' && message.text}
+			  {message.sender === 'ai' && message.text}
               {message.sender === 'ai' && (
-		
                 <div className="flex items-center ml-2">
                   <button
                     onClick={() => toggleExpand(index)}
