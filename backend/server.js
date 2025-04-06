@@ -25,7 +25,7 @@ app.use('/api/convo/',ConvoRouter);
 app.use('/api/ml/',MLRouter);
 
 app.get('/',(req,res)=>{
-	res.send("THis is index/landing");
+	res.send("Mone ga ga ganiga");
 });
 
 
