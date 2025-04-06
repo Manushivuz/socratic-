@@ -34,30 +34,62 @@ def create_chat_session():
 # Start the first chat session
 chat_session = create_chat_session()
 
+bot_session = create_chat_session()
+
 # API to handle chat messages
 current_conversation_id = None
 
+
+def generate_chat_title(user_message):
+    title_prompt = f"Generate a chat title for the following message dont include question marks or give options a proper chat title never use same words for each prompt keep switching it , create proper spacing while generating title {user_message}"
+    title_response = chat_session.send_message(title_prompt)
+    return title_response.text.strip()
 
 @app.route('/chatprompt', methods=['POST'])
 def mlprompt():
     global chat_session, current_conversation_id
     try:
-        print("Here")
         data = request.get_json()
         user_message = data.get('message', '')
-        trigger = data.get('trigger','')
-        if trigger:
-            print("trigger true")
+        istrigger = data.get('trigger')
+        if(istrigger):
             chat_session = create_chat_session()
-        print(f"Prompt: {user_message}")
-        # AI response generation
         response = chat_session.send_message(user_message)
-        print(f"Response: {response.text}")
+        print(response.text)
         return jsonify({'response': response.text}), 200
-
     except Exception as e:
         print(e)
-        return jsonify({'error': e}), 500
+        return jsonify({'error': str(e)}), 500
+ 
+@app.route('/getbotres', methods=['POST'])
+def botprompt():
+    global bot_session, current_conversation_id
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        istrigger = data.get('trigger')
+        if(istrigger):
+            bot_session = create_chat_session()
+        response = bot_session.send_message(user_message) 
+        print(response.text)
+        return jsonify({'response': response.text}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+        
+@app.route('/gettitle', methods=['POST'])
+def titleprompt():
+    global chat_session, current_conversation_id
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        print("user msg: ",user_message)
+        chat_title = generate_chat_title(user_message)
+        print(chat_title);
+        return jsonify({'title': chat_title}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
         
         
         

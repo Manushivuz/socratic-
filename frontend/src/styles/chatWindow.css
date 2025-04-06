@@ -21,6 +21,9 @@
 	
 }
 
+#buttonformargin{
+	margin-bottom:0.6pc;
+}
 
 #inputback{
 	transition: display 2s ease-in;

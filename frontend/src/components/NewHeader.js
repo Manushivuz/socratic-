@@ -3,19 +3,22 @@ import GoogleLoginButton from './GoogleLoginButton';
 import { FaRegLightbulb } from 'react-icons/fa'; // Correct import for FaRegLightbulb
 import { FiSidebar } from 'react-icons/fi'; // Sidebar toggle icon
 import axios from 'axios';
+import { ReactComponent as Loader } from '../loader.svg'
+import './loader.css'
+
 
 import {useNavigate} from 'react-router-dom'
 
 const backy = process.env.REACT_APP_BACKEND_URL;
 
-function NewHeader({ toggleSidebar, isSidebarOpen }) {
+function NewHeader({ toggleSidebar, isSidebarOpen,loading,setMessages }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('isLoggedIn') === 'true';
   });
   useEffect(() => {
     // Store the login status in localStorage whenever it changes
     localStorage.setItem('isLoggedIn', isLoggedIn);
-  }, [isLoggedIn]);
+  },[isLoggedIn]);
   const [darkMode, setDarkMode] = useState(false);
   const navigator=useNavigate();
   const handleLogin= async ()=>{
@@ -26,7 +29,8 @@ function NewHeader({ toggleSidebar, isSidebarOpen }) {
 	  try{
 		  axios.defaults.withCredentials = true;
 		  const {data} = await axios.post(backy+'/api/auth/logout',{},{withCredentials:true});
-		  if(data.message){ 
+		  if(data.message){
+			setMessages([]);
 			alert("Logged Out Successfully");
 			navigator('/');
 		  }
@@ -36,16 +40,11 @@ function NewHeader({ toggleSidebar, isSidebarOpen }) {
 		  console.log(e);
 	  }
       
-	  
-      
-      // Add any additional logout logic here (e.g., clearing tokens)
     } else {
       // Handle Login
       
       navigator('/login'); // Navigate to login page
-      setIsLoggedIn(true);
-      localStorage.setItem('isLoggedIn', 'true');
-      
+
     }
     
   }
@@ -70,7 +69,8 @@ function NewHeader({ toggleSidebar, isSidebarOpen }) {
 
       {/* Center - Chat App Title */}
       <h1 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-        Socratic Teaching Agent
+	  {loading?<Loader className="spinner" />:  <>Socratic Teaching Agent</>}
+        
       </h1>
 
       {/* Right side - Lantern for dark mode toggle and Google login */}

@@ -24,6 +24,7 @@ const GetConvo = async (req,res)=>{
 }
 
 const DeleteConvoFromId = async (req,res)=>{
+	console.log("Deleting a convo, ");
 	const {userId,convoId} = req.body;
 	const checksize = convoId.length >=20;
 	if(!checksize) return res.json({error: "Improper id"});
@@ -51,7 +52,7 @@ const DeleteConvoFromId = async (req,res)=>{
 const GetConvoFromId = async (req,res)=>{
 	const {userId,convoId} = req.body;
 	if(!convoId) return res.json({error: "Convoid missin"});
-	current_convoId = convoId;
+	
 	const checkid = convoId.slice(0,24) === userId;
 	if(!checkid) return res.json({error: "Unauthorized"});
 	
@@ -77,7 +78,6 @@ const AddConvo = async(req,res)=>{
 	const {userId,newmsg} = req.body;
 	
 	try{
-		
 		const existsUserId = await Conversation.findOne(
 			{userId: userId}
 		);
@@ -91,7 +91,8 @@ const AddConvo = async(req,res)=>{
 			}
 		});
 		await newconvo.save();
-		return res.json({message: "Convo saved"});
+		current_convoId = newconvoid;
+		return res.json({message: "Convo saved",convoId: newconvoid});
 	}
 	catch(e){
 		console.log(e);
@@ -102,17 +103,17 @@ const AddConvo = async(req,res)=>{
 
 
 const AddConvoFromId = async (req,res)=>{
-	const {newmsg} = req.body;
-	
+	const {newmsg,convoId} = req.body;
+	console.log("Inside AddConvoFromId, convoid: ",convoId);
 	try{
-		if(current_convoId){
+		if(convoId){
 			const existsConvoId = await Conversation.findOne(
-				{"conversations.conversationId": current_convoId}
+				{"conversations.conversationId": convoId}
 			);
 
 			if(existsConvoId){
 				await Conversation.updateOne(
-					{"conversations.conversationId": current_convoId},
+					{"conversations.conversationId": convoId},
 					{$push: {"conversations.$.messages": newmsg}}
 				);
 				return res.json({message: "Convo saved at existing id"});
@@ -136,14 +137,13 @@ const GetConvoList = async (req,res)=>{
 			{$match: {userId: new ObjectId(userId)}}, 
 			{$group: {_id:"$userId",
 			convos: {$push: 
-			{convoId: "$conversations.conversationId",messages: "$conversations.messages"}}}},
+			{convoId: "$conversations.conversationId",messages: "$conversations.title"}}}},
 		]);
 
 		for(let i=0;i<allconvos[0].convos.length;i++){
-			allconvos[0].convos[i].messages = allconvos[0].convos[i].messages[0][0].user;
+			//allconvos[0].convos[i].messages = allconvos[0].convos[i].title;
 			allconvos[0].convos[i].convoId = allconvos[0].convos[i].convoId[0];
 		}
-
 		return res.json({message: allconvos[0].convos});
 	}
 	catch(e){
@@ -152,6 +152,6 @@ const GetConvoList = async (req,res)=>{
 	}
 }
 
-module.exports = {GetConvo,AddConvo,GetConvoFromId,DeleteConvoFromId,GetConvoList,current_convoId,AddConvoFromId};
+module.exports = {GetConvo,AddConvo,GetConvoFromId,DeleteConvoFromId,GetConvoList,AddConvoFromId};
 
 

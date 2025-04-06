@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-const Signup = ({ switchToLogin }) => {
+const Signup = ({ switchToLogin,switchToVerify }) => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -24,8 +24,12 @@ const Signup = ({ switchToLogin }) => {
       { headers: { 'Content-Type': 'application/json' } }
     )
     .then(result => {
-      console.log(result)
-      switchToLogin();
+      console.log(result);
+	  localStorage.setItem('email', email);
+	  if(result.data.message){
+		  switchToVerify();
+	  }
+	  else alert(result.data.error);
     })
     .catch(err => console.log(err));
   }    
@@ -55,8 +59,17 @@ const Signup = ({ switchToLogin }) => {
         <div className="input-box animation" style={{ '--li': 21, '--S': 4 }}>
           <button className="btn" type="submit">Register</button>
         </div>
+		
+		
+		
         <div className="reg-link animation" style={{ '--li': 22, '--S': 5 }}>
           <p>Already have an account? <a href="#" onClick={switchToLogin} className="SignInLink">Login</a></p>
+		  
+		  <p>Skip Sign-In <a href="#" onClick={
+			  ()=>{
+				  navigate('/Home');
+			  }
+		  }>Back</a></p>
         </div>
       </form>
     </div>

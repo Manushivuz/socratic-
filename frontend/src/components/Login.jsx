@@ -3,11 +3,12 @@ import {Link} from 'react-router-dom';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom'
 import "../styles/Signup.css"
-const Login = ({ switchToSignUp }) => {
+const Login = ({ switchToSignUp,switchToReset }) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const navigator =  useNavigate();
   const backy = process.env.REACT_APP_BACKEND_URL;
+  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,8 +22,11 @@ const Login = ({ switchToSignUp }) => {
       withCredentials: true }
     )
     .then(result => {console.log(result.data)
-      if(result.data.message === "Success") // use this for route
-       {navigator('/Home')}
+      if(result.data.message === "Success"){
+		  localStorage.setItem('isLoggedIn', 'true');
+		  navigator('/Home')
+		  };
+	  if(result.data.error) alert(result.data.error);
     })
     .catch(err => {
       alert(`Error: ${err}`)
@@ -48,8 +52,18 @@ const Login = ({ switchToSignUp }) => {
         <div className="input-box animation" style={{ '--D': 3, '--S': 24 }}>
           <button className="btn" type="submit">Login</button>
         </div>
+		
+		<div className="reg-link animation" style={{ '--D': 4, '--S': 25 }}>
+		<p><a href="#" onClick={switchToReset} className="SignUpLink">Forgot Password?</a></p>
+		</div>
+		
         <div className="reg-link animation" style={{ '--D': 4, '--S': 25 }}>
           <p>Don't have an account? <a href="#" onClick={switchToSignUp} className="SignUpLink">SignUp</a></p>
+		  <p>Skip Sign-In? <a href="#" onClick={
+			  ()=>{
+				  navigator('/Home');
+			  }
+		  } >Back</a></p>
         </div>
       </form>
     </div>

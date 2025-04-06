@@ -1,0 +1,10 @@
+form-box-check{
+	margin: 1pc;
+	position: relative;
+}
+
+#head-reset{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

@@ -16,39 +16,68 @@ function App() {
   const [addconvotrigger, setaddconvotrigger] = useState(false);
   const backy = process.env.REACT_APP_BACKEND_URL;
   const [chatbox,setchatbox] = useState(false);
-  
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleSendMessage = (newMessage) => {
+	
     if (newMessage.trim() !== '') {
       const userMessage = { sender: 'user', text: newMessage };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
   
       // Make a POST request to the backend API
       setLoading(true); // Set loading to true while waiting for response
-      axios.post(backy+'/api/ml/getairesponse', 
-	  { prompt: newMessage, trigger: addconvotrigger},
-	  { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
-        .then((response) => {
-          const aiResponse = { sender: 'ai', text: response.data.message };
-          setMessages((prevMessages) => [...prevMessages, aiResponse]);
-  
-          // You can update the chat list or handle any additional logic here
-          updateChatList(newMessage);
-        })
-        .catch((error) => {
-          console.error('Error fetching AI response:', error);
-          const aiResponse = { sender: 'ai', text: 'Sorry, something went wrong.' };
-          setMessages((prevMessages) => [...prevMessages, aiResponse]);
-        })
-        .finally(() => {
-          setLoading(false); // Reset loading state
-        });
+	  
+	  if(localStorage.getItem('isLoggedIn')==="true"){
+		  axios.post(backy+'/api/ml/getairesponse', 
+		  { prompt: newMessage, trigger: addconvotrigger,convoId: currentConversationId},
+		  { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+			.then((response) => {
+			  const aiResponse = { sender: 'ai', text: response.data.message };
+			  setMessages((prevMessages) => [...prevMessages, aiResponse]);
+	  
+			  // You can update the chat list or handle any additional logic here
+			  updateChatList(newMessage);
+			  if(addconvotrigger){
+				  setCurrentConversationId(response.data.convoId);
+			  }
+			})
+			.catch((error) => {
+			  console.error('Error fetching AI response:', error);
+			  const aiResponse = { sender: 'ai', text: 'Sorry, something went wrong.' };
+			  setMessages((prevMessages) => [...prevMessages, aiResponse]);
+			})
+			.finally(() => {
+			  setLoading(false);
+			  setaddconvotrigger(false);
+			});
+	  }
+	  
+	  if(localStorage.getItem('isLoggedIn')==="false"){
+		  axios.post(backy+'/api/ml/getofflineres', 
+		  { prompt: newMessage,trigger: addconvotrigger},
+		  { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+			.then((response) => {
+			  const aiResponse = { sender: 'ai', text: response.data.message };
+			  setMessages((prevMessages) => [...prevMessages, aiResponse]);
+			})
+			.catch((error) => {
+			  console.error('Error fetching AI response:', error);
+			  const aiResponse = { sender: 'ai', text: 'Sorry, something went wrong.' };
+			  setMessages((prevMessages) => [...prevMessages, aiResponse]);
+			})
+			.finally(() => {
+			  setLoading(false); // Reset loading state
+			});
+			if(addconvotrigger) setaddconvotrigger(false);
+	  }
+	  
     }
   };
-  
+  const setLoadingFromSidebar =()=>{
+	  setLoading(true);
+  }
 
   const updateChatList = () => {
     loadPreviousChats();
@@ -56,6 +85,7 @@ function App() {
 
   const loadPreviousChats = async () => {
     setLoading(true); // Set loading to true while fetching chats
+	setaddconvotrigger(false);
 	try{
 		
 		axios.defaults.withCredentials = true;
@@ -83,6 +113,7 @@ function App() {
   }, []);
 
   const displayFullChat = async (chatId) => {
+	
 	setaddconvotrigger(false);
 	
 	setchatbox(true);
@@ -120,14 +151,15 @@ function App() {
       .catch(error => {
         console.error('Error loading chat:', error);
       }); */
+	  setLoading(false);
 }
 
 
 const handleNewConversation = () => {
 	setMessages([]);
+	setLoading(false);
 	setaddconvotrigger(true);
 	setchatbox(true);
-	
 };
 
   // Function to handle chat deletion
@@ -140,13 +172,16 @@ const handleNewConversation = () => {
       .catch((error) => {
         console.error('Error deleting chat:', error);
       });
+	  setMessages([]);
+	  setLoading(false);
+	  setchatbox(false);
 };
 
 
   return (
     <div className='home-body'>
       <div className="flex flex-col h-screen">
-      <NewHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+      <NewHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} loading = {loading} setMessages = {setMessages}/>
       <div className="flex flex-grow relative overflow-hidden" id="chatWindowid1">
         <div
           className={`transition-transform duration-1000 ease-in-out h-full ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} z-10 absolute`}
@@ -156,7 +191,9 @@ const handleNewConversation = () => {
             previousChats={previousChats} 
             onChatClick={displayFullChat} 
             onNewChat={handleNewConversation} 
-            onDeleteChat={handleDeleteChat}  // Pass the delete handler
+            onDeleteChat={handleDeleteChat}
+			loading={loading}// Pass the delete handler
+			setLoading = {setLoadingFromSidebar}
           />
         </div>
 
