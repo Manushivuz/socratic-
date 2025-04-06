@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
 		credentials: true,
-		origin: ['http://localhost:3000','https://socratic-learning.onrender.com'],
+		origin: ['http://localhost:3000','https://socratic-learn.onrender.com'],
 		allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 	}));
 	
