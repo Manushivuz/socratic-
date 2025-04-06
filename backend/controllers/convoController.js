@@ -1,5 +1,5 @@
 const Conversation = require('../models/conversation');
-const User = require('../models/User');
+const User = require('../models/user');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
 current_convoId = null;
