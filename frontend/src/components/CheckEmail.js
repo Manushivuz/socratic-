@@ -4,6 +4,8 @@ import React, { useState,useEffect } from 'react';
 
 const CheckEmail = ({setisemail,email,setEmail})=>{
 	const [showemailbutton,setseb] = useState(true);
+  const backy = process.env.REACT_APP_BACKEND_URL;
+
 	const handleEmailSubmit = (e) => {
 	setseb(false);
     e.preventDefault();
@@ -11,7 +13,7 @@ const CheckEmail = ({setisemail,email,setEmail})=>{
       alert("Email Field Required");
       return;
     }
-    axios.post('http://localhost:5000/api/auth/checkemail', 
+    axios.post(`${backy}/api/auth/checkemail`, 
       {email}, 
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -19,7 +21,7 @@ const CheckEmail = ({setisemail,email,setEmail})=>{
 	  localStorage.setItem('email',email);
       if(result.data.message === true){
 		  setisemail(true);
-		  axios.post('http://localhost:5000/api/auth/sendreset', 
+		  axios.post(`${backy}/api/auth/sendreset`, 
 			  {email}, 
 			  { headers: { 'Content-Type': 'application/json' } }
 			)

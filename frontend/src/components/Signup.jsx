@@ -11,6 +11,7 @@ const Signup = ({ switchToLogin,switchToVerify }) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const navigate =  useNavigate();
+  const backy = process.env.REACT_APP_BACKEND_URL;
   
 
   const handleSubmit = (e) => {
@@ -19,7 +20,7 @@ const Signup = ({ switchToLogin,switchToVerify }) => {
       alert("All fields are required");
       return;
     }
-    axios.post('http://localhost:5000/api/auth/register', 
+    axios.post(`${backy}/api/auth/register`, 
       { name, email, password }, 
       { headers: { 'Content-Type': 'application/json' } }
     )

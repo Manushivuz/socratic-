@@ -8,13 +8,15 @@ import CheckEmail from './CheckEmail';
 
 const SetNewPwd = ({switchToLogin,email})=>{
 	const [newpassword, setNewPassword] = useState();
+  const backy = process.env.REACT_APP_BACKEND_URL;
+
 	const handlePwdSubmit = (e) => {
     e.preventDefault();
     if (!newpassword) {
       alert("New Password Field Required");
       return;
     }
-    axios.post('http://localhost:5000/api/auth/changepwd', 
+    axios.post(`${backy}/api/auth/changepwd`, 
       {email:email, newpwd: newpassword}, 
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -53,6 +55,7 @@ const SetNewPwd = ({switchToLogin,email})=>{
 const ResetOtp = ({email,setisotp,setisemail,setdefault}) => {
   const [verifyotp, setVerifyOtp] = useState();
   const navigate =  useNavigate();
+  const backy = process.env.REACT_APP_BACKEND_URL;
 
   
   const handleOtpSubmit = (e) => {
@@ -61,7 +64,7 @@ const ResetOtp = ({email,setisotp,setisemail,setdefault}) => {
       alert("OTP field is required");
       return;
     }
-    axios.post('http://localhost:5000/api/auth/receivereset', 
+    axios.post(`${backy}/api/auth/receivereset`, 
       { email: localStorage.getItem('email'),recOtp: verifyotp}, 
       { headers: { 'Content-Type': 'application/json' } }
     )
