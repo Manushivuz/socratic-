@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 const Verify = ({ switchToLogin }) => {
   const [verifyotp, setVerifyOtp] = useState();
   const navigate =  useNavigate();
+  const backy = process.env.REACT_APP_BACKEND_URL;
   
 
   const handleSubmit = (e) => {
@@ -17,7 +18,7 @@ const Verify = ({ switchToLogin }) => {
       alert("OTP field is required");
       return;
     }
-    axios.post('http://localhost:5000/api/auth/verifyotp', 
+    axios.post(`${backy}/api/auth/verifyotp`, 
       {recOtp: verifyotp,email: localStorage.getItem('email')}, 
       { headers: { 'Content-Type': 'application/json' } }
     )
