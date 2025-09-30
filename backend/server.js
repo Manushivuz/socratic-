@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
 		credentials: true,
-		origin: ['http://localhost:3000','https://socratic-7go5.onrender.com/'],
+		origin: ['http://localhost:3000','https://socratic-7go5.onrender.com','https://socratic-seven.vercel.app'],
 		allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 	}));
 	
